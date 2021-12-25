@@ -1,195 +1,179 @@
-**CPEN 221 / Fall 2020**
+**CPEN 221 / Fall 2020 / MiniProject 2**
 
-# MiniProject 1: Image Processing
+The Graph ADT and Virtual Worlds
+===
 
-We will work with images (in JPEG and PNG formats) and have some fun. Image processing and computer vision algorithms are a key component of autonomous cyber-physical systems, biomedical systems, and even simple task automation systems. With this mini-project, we hope to expose you to some ideas in this application subdomain of computing.
+This mini-project has two parts. Part 2 can benefit from your implementation of Part 1.
 
-An image is a -- for our purposes -- a **datatype** that supports a set of operations. In addition to implementing the required methods, you will need to develop robust testing strategies for your work and demonstrate code coverage. You should also write method specifications as needed to ensure readability and maintainability of the codebase.
+## Part 1: Unweighted Directed Graphs
 
-## Background
+In this part of the mini-project, you will implement a `Graph` interface using two different graph representations. You will then develop several algorithms that use the `Graph` interface that might be used in a social network.
 
-In a computer, we represent images using a matrix of pixels. A pixel is a colour at some (x, y) coordinate. The value of a colour/pixel is an `int` with the four bytes (an `int` in Java is four bytes long) representing the following components: an alpha value, which represents the transparency level of the pixel, and then red, green and blue colour values. Each of these four values is, then, a value between 0 and 255.
+Your goals for this machine problem are to:
++ Understand and apply the concept of encapsulation;
++ Understand interfaces;
++ Understand what graphs are and how they can be represented;
++ Implement some basic graph algorithms.
 
-<img src="img/Pixel.jpg" align = "center" style="margin: 0 auto;" />
+**Preliminary reference**: Wikipedia entry on Graphs https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)
 
-(In this MP, when in doubt, use alpha = 255. We are not interested in transparency for the miniproject.)
+### Task 1: Basic Graph Implementations
+First, write two classes that implement the `ca.ubc.ece.cpen221.graphs.core.Graph` interface, which represents a _directed_ graph.
++ **Adjacency List**: Inside the package `ca.ubc.ece.cpen221.graphs.one`, implement the `AdjacencyListGraph` class. Your implementation must internally represent the graph as an _adjacency list_. If you are not familiar with the adjacency list representation of graphs, see the [Wikipedia page on the adjacency list representation](https://en.wikipedia.org/wiki/Adjacency_list) as a reference.
++ **Adjacency Matrix**: Next, implement the `AdjacencyMatrixGraph` class in the `ca.ubc.ece.cpen221.graphs.one` package. Your implementation must internally represent the graph as an adjacency matrix. If you are not familiar with the adjacency matrix representation of graphs, see the [Wikipedia page on the adjacency matrix representation](https://en.wikipedia.org/wiki/Adjacency_matrix) as a reference.
 
-We can access the data in an image through standard Java APIs (API = application programming interface). The top-left corner of an image would be pixel (`0`, `0`), and the bottom-right corner would be the pixel (`width - 1`, `height - 1`), where the size of the image is `width x height`.
+This task uses Java Generics. Each `Vertex` may hold content of a specified type. For example, a graph that where each vertex containts a `String` as content would be declared using the type `Graph<String>` and a vertex in such a graph would be of type `Vertex<String>`. (This is similar to how `List`s are implemented in the standard Java library.)
 
-Given that an image is a matrix, we can perform a variety of operations on an image. And that will be the goal of this mini-project. `Image` is a datatype and you will implement another datatype `ImageTransformer` that allows you to perform various operations on an image.
+### Task 2: Graph Algorithms 1
+For this part of the assignment, you will implement algorithms that might be used for social network analysis using your graph implementations.
 
-You are given the implementation of a datatype `Image` in the package `ca.ubc.ece.cpen221.ip.core` that supports some required operations so that you do not have to write those by relying on Java's libraries alone:
+Your algorithms must use only the methods provided in the interface, and can not use any features specific to the implementation of `Graph` being used. Your algorithms must work correctly on any correct implementation of a `Graph`, including your `AdjacencyMatrixGraph` and `AdjacencyListGraph` implementations.
 
-```java
-/* Opening an image from a file */
-/* You can provide a file name and open that file as an Image */
-Image img = new Image("resources/2092.jpg");
+_All your algorithms must work on directed graphs (digraphs)._
 
-/* Creating an empty Image with all black pixels */
-/* You will need to provide the width and height of the image */
-Image img = new Image(640, 480);
++ **Breadth first search (BFS)**: Implement the [breadth first search](https://en.wikipedia.org/wiki/Breadth-first_search) algorithm to traverse a graph.
++ **Depth first search (DFS)**: Implement the [depth first search](https://en.wikipedia.org/wiki/Depth-first_search) algorithm to traverse a graph.
 
-/* Obtaining the width and height of an image */
-int width = img.width();
-int height = img.height();
+For both BFS and DFS above, you should use traverse the entire graph. You should return a set of lists (`Set<List<Vertex>>`). Each list in the set is a connected component of the graph. The vertices in each list are in the order they were visited by the traversal routines. More specifically, start a BFS or DFS traversal at every possible vertex and each such traversal will produce a list. The set of all these lists is what you want to return. Furthermore, when deciding which vertex to visit next, you should select the vertex with the lexicographically smaller label. This approach ensures that there is exactly one list corresponding to a BFS or DFS starting at a given vertex.
 
-/* Get the colour of a pixel as a Color object ref */
-Color pixelColour = img.get(column, row);
+### Task 3: Graph Algorithms 2
 
-/* Get the colour of a pixel as an int that represents RGB */
-int pixelColour = img.getRGB(column, row);
++ **Common upstream vertices**: Given a graph _G_ and two vertices _a_ and _b_ in _G_, your implementation should return a list of all vertices _u_ such that there is an edge from _u_ to _a_ and an edge from _u_ to _b_. If there are no such vertices then your implementation should return an empty list.
++ **Common downstream vertices**: Given a graph _G_ and two vertices _a_ and _b_ in _G_, your implementation should return a list of all vertices _v_ such that there is an edge from _a_ to _v_ and an edge from _b_ to _v_.  
++ **Distance**: Implement a method to find the distance between two vertices in an unweighted graph. In an unweighted graph _G_, given two vertices _s_ and _t_, the distance between the two vertices is the minimum number of edges that would have to be traversed to get to _t_ from _s_. In other words, the distance between two vertices is the length of the shortest path between the two vertices. The distance between a vertex and itself is 0. If no path exists from _s_ to _t_ then your method should take appropriate action.
++ **Graph diameter**: The diameter of a graph is the maximum distance among the distances between all pairs of vertices in the graph. If it is not possible to get to vertex _t_ from vertex _s_ then the distance between those two vertices, and consequently the graph diameter, is _infinity_. We will, however, adopt a more relaxed definition where we will specify the diameter as being the maximum finite distance among pairs of vertices except in the case when all distances are infinite (when we will treat the diameter as infinite). Implement a method to determine the diameter of a graph.
 
-/* Setting the colour of a pixel has two options */
-img.set(column, row, colour); // using a Color object ref
-img.set(column, row, rgb); // using the RGB values represented as an int
+### Task 4: Analyzing Social Networks
 
-/* Show an image on the screen in a separate window */
-img.show();
-```
+> As long as your code runs in a _reasonable_ amount of time, and returns the correct values, you do not need to worry about the [time complexity](https://en.wikipedia.org/wiki/Time_complexity) of your algorithms. _However_, there may be some extra credit for particularly efficient implementations.
 
-Read through the implementation of `Image` should you have questions about what else is supported or how the datatype is implemented.
+An anonymized dataset from Twitter is provided in the file `datasets/twitter.txt`. The file contains many rows, with each row containing an entry of the form `a -> b` to indicate that `b` follows `a`.
 
-Use the implementations of `ImageTransformer.grayscale()` and `ImageTransformer.red()` as examples of image transformations. You will also be working with bitwise operations (`ImageTransformer.red()` is an example) so you may want to [read about these operations](https://docs.oracle.com/javase/tutorial/java/nutsandbolts/op3.html).
+We would like to answer the following questions from this dataset:
 
-## Main Tasks
++ **Common influencers**: Given users `a` and `b`, who are the common users that both `a` and `b` follow?
++ **Count retweets**: Suppose user `a` tweets a message, what is the minimum number of retweets needed before `a`'s tweet appears in `b`'s feed? (The assumption here is that a tweet will appear in `b`'s feed if the tweet originated from one of the users that `b` follows.)
 
-### Task 1: Simple Operations
+You should implement suitable methods for such analysis, including a `public static void main(String[ ] args)` method in a class named `TwitterAnalysis`. The `main` method in `TwitterAnalysis` should handle command-line arguments.
 
-* Implement a transform that produces a mirroring of a given image. (This is what video conferencing tools like Zoom do.)
+## Part 2: Virtual Worlds
 
-* Transform an image to its negative: if the colour of a pixel is (r, g, b) then the colours of the same pixel in the negative of the image are (255-r, 255-g, 255-b).
+In this part of the mini-project, you will complete and extend a virtual world. This world contains many different items -- animate and inanimate -- which can interact with each other in complex ways. For example, `Fox`es hunt for `Rabbit`s, which in turn try to outwit their predators. It's up to you to determine just how complex the interaction will be.
 
-* Posterize an image: This transform produces an image that uses a restricted number of colours. For each pixel, analyze each colour independently and produce a new image as follows:
-    * if the value of the colour is between 0 and 64 (both limits inclusive), set it to 32;
-    * if the value of the colour is between 65 and 128, set it to 96;
-    * if the value of the colour is between 129 and 255, set it to 222.
-    
-* Clip an image: Given the top-left corner of a rectangle as well as the bottom-right corner of the same rectangle, clip the image to match the rectangle (in other words: copy the contents within the given rectangular region).
-  
-### Task 2: Some More (Simple) Operations
+Your goals for this machine problem are to:
 
-* Simple de-noising: Replace the value of a pixel by the median value of that pixel and its neighbouring pixels. Each pixel may have up to 8 neighbouring pixels. Each colour channel should be handled separately (you do not take the median of the entire pixel/colour value).
++ Practice encapsulation and code reuse with subtypes and delegation;
++ Program against existing interfaces;
++ Think about code from a design point of view.
 
-* Simulate weathering: Replace the value of a pixel by the minimum value of its neighbours, again considering each colour separately.
+> The basic code structure given to you for this machine problem uses the **delegation pattern** in the implementation of the AI. You may want to read more about the delegation pattern starting with the [Wikipedia article](https://en.wikipedia.org/wiki/Delegation_pattern).
 
-* Block painting: Treat the image as a sequence of `m x m` blocks. For each block, replace all pixels by the average pixel. As always, treat each colour separately when averaging pixels. `m` is a parameter for this transformation that is very weakly modelled on Seurat's paintings. 
+We have developed a virtual-world environment that can simulate the interaction of many items and actors. This world is flat and consists of many fields that can each have one `Item`. In the beginning the world will contain `Grass`, `Rabbit`s, and `Fox`es, and you will add additional `Item`s as part of this machine problem.
 
-### Task 3: Rotation and Similarity
+Time in the virtual-world simulation progresses in discrete steps; in every step an `Actor` may act, for example, by moving, eating, or breeding. We have provided some simple AIs for rabbits and foxes; you will implement more intelligent AIs for them and other items you create.
 
-* Rotation: Rotate an image about its centre by a specified angle, in the clockwise direction. Some linear algebra may suggest that we could use the following approach (you will have to add some translation to the coordinates to reflect the fact that all coordinate values are >= 0):
-    ```java
-    for (int col = 0; col < width; col++) {
-        for (int row = 0; row < height; row++) {
-            int x_new = (int) Math.round(Math.cos(degrees * Math.PI / 180) * (col - width / 2) +
-                Math.sin(degrees * Math.PI / 180) * (row - height / 2));
-            int y_new = (int) Math.round(-Math.sin(degrees * Math.PI / 180) * (col - width / 2) +
-                Math.cos(degrees * Math.PI / 180) * (row - height / 2));
-            outImage.set(x_new, y_new, original_image.get(col, row));
-        }
-    }
-    ```
-    
-    This approach shown above will result in significant distortion for rotation when the angle is not a multiple of 90 degrees because many pixels in the output image will not have a mapping from a pixel in the original image.
-    
-    The approach you should implement, called the nearest neighbour interpolation, is to use reverse lookups (using the inverse of the rotation matrix). This can be expressed as:
-    
-    ```java
-          for (int col = 0; col < new_width; col++) {
-              for (int row = 0; row < new_height; row++) {
-                  int original_x = (int) ((col - width / 2) * Math.cos(degrees * Math.PI / 180) +
-                      (row - height / 2) * Math.sin(degrees * Math.PI / 180) + original_width / 2);
-                  int original_y = (int) (-(col - width / 2) * Math.sin(degrees * Math.PI / 180) +
-                      (row - height / 2) * Math.cos(degrees * Math.PI / 180) + original_height / 2); 
-                  if (original_x >= 0 && original_y >= 0 && 
-                      original_x < original_width &&
-                      original_y < original_height) {
-                      outImage.set(col, row, original_image.get(original_x, original_y));
-                  }
-              }
-          }
-    ```
-  
-  The dimensions of the rotated image may be larger than the dimensions of the original image, and you should use the smallest possible dimensions for the rotated image. The regions in the rotated image that do not have a mapping to the original image should be coloured white (`Color.WHITE`).
+This machine problem has two parts: 
 
-* Cosine Similarity: We would like to compare two images to determine how similar they are. To do so, we will use the _grayscale_ version of both images and compute the cosine similarity between the two images. We first transform the images from an `m x n` matrix to a vector of length `m x n`, with row 0 appearing before row 1 and so on. The cosine similarity between two vectors of equal length, **x** and **y**, is (and for this MP, the vector length `N = m x n`):
++ filling the world with additional items, 
++ and creating intelligent AIs for `Rabbit`s and `Fox`es.
 
-    <img src="img/CosineSimilarity.jpeg" width="400px" />
-    
-    This functionality should not be implemented in `ImageTransformer` but should be a `static` method in `ImageProcessing`.
+### Task 5: Give Life To The Virtual World
 
-### Task 4: The Discrete Fourier Transform 
+This is a creative task. Add at least **four** new subtypes of `Item` to the virtual world:
 
-Compute the Discrete Fourier Transform of the provided image. We will use grayscale images for computing the DFT. The DFT of an `m x n` image is computed as follows:
++ `Animal`s: In the `animals` package create at least one additional animal type, such as lions, flies, and elephants.
++ `Vehicle`s: In the `vehicles` package create at least one vehicle, which can run over (destroy) everything with a lower strength but will crash (be destroyed) when running into something with a greater strength. Like real vehicles, your vehicles should build momentum when moving, so it takes time for them to accelerate or brake or turn; they can change directions only at low speed. Note that the speed of a `Vehicle` is controlled by the cool-down period.
++ **Your own category**: In a separate package implement at least one subtype of `Item`. Examples might include tornadoes and earthquakes, mountains and cliffs, even [Scarlet Witch](https://en.wikipedia.org/wiki/Scarlet_Witch), [Master Yoda](https://en.wikipedia.org/wiki/Yoda) or [Voldemort](https://en.wikipedia.org/wiki/Lord_Voldemort). _Use your imagination!_
 
-<img src="img/DFT2D.jpg" width="400px" />
+You have considerable freedom in this machine problem for which items you add and how your items behave. Your items might range from a simple stone to sophisticated characters and weapon systems, from real-world animals to science fiction creatures, or include technical objects.
 
-The DFT captures the frequency variations of pixel intensities using two-dimensional sine and cosine waves. For an `m x n` image, we obtain `m x n` frequency components (we compute F(0,0), ..., F(m-1, n-1)), which can also be represented using an `m x n` matrix of complex numbers.
+When designing your items think about subtyping and interfaces. You may want to introduce additional interfaces or abstract classes where suitable. You may get extra credit for creativity.
 
-We can use the result due to Eüler (see below) to represent a DFT using two matrices, one that represents the magnitude of the complex numbers and the other representing the phase of the complex numbers.
+### Task 6: Create AIs for Rabbits and Foxes
 
-<img src="img/eiTheta.jpg" width="200px" />
+Provide a more intelligent behavior for Rabbits and Foxes by providing an implementation of their AI classes. The best AIs are those that generate the largest average animal population over the entire time, measured separately for rabbits and foxes.
 
-The magnitude and phase are:
+Your AI implementations may benefit from using your graph implementations from earlier.
 
-<img src="img/CN-Magnitude+Phase.jpeg" width="200px" />
+### Background for Part 2
 
-A [Plus magazine article](https://plus.maths.org/content/fourier-transforms-images) provides a good introduction to spatial DFTs. 
+This section describes the design of the virtual world and its rules.
 
-### Task 5: Green Screening
+#### Objects In The World
 
-Given a specific colour, identify the largest connected region of the image that matches exactly that colour. Then determine a rectangle the bounds this "green screen" region. After determining the bounding rectangle, overlay a (provided) background image on that rectangle, and replace all the pixels matching the specified colour with corresponding pixels from the background image. When the background image is smaller than the bounding rectangle, tile the background image. To overlay the background image on the bounding rectangle, the (0, 0) pixel of the background image should correspond to the top-left corner of the rectangle.
+The world contains the following object types, with each type having different properties and specifications described here.
 
-### Task 6: Aligning Images with Text
++ `Item`: An `Item` represents a physical object in the virtual world that occupies a field in a specific location, where it is represented with a picture. For example, `Fox`es, `Rabbit`s, and `Grass` are Items.
++ `Actor`: An Actor can actively affect the state of the world. Many `Item`s are `Actor`s; they can decide to move, eat, breed, or perform other actions. The world regularly determines each `Actor`'s next action by calling `getNextAction( )`; the Actor returns a `Command` that represents the next action. `Actor`s can act at different speeds, acting on every step in the world or only every n<sup>th</sup> step -- the speed of an actor is determined by its cool-down period.
++ `ArenaAnimal`: Rabbits and foxes are special, and we have already provided an implementation of them. Rabbits and foxes can only see the immediate world around them (determined by a view range, measured in [Manhattan distance](https://en.wikipedia.org/wiki/Taxicab_geometry)). They have energy, starting with a default value and increasing when they
+   eat something, but also slowly decreasing each time they act. Your additional items may behave like arena animals, but are not required to do so.
 
-Implement an algorithm that will allow us to **align** a scanned **text document** when the image is not properly aligned (there is an angular shift). Use the results of the DFT to achieve this correction. The magnitude component of the DFT output will reflect the angle by which the scanned image is rotated from the perpendicular.
+Additionally, you will find interfaces representing `MoveableItem`s (that can be moved to an adjacent location at each step), `LivingItem`s (that are actors which can move, eat, breed, and have energy), `Food` (representing edible items providing plant or meat-based calories), and so forth.
 
-This task is deliberately open-ended. We may provide resources and ideas after the intermediate deadline to students that would like more information for this task. 
+There are also implementations of `Grass`, `Gardener`s, `Rabbit`s (eating Grass), `Fox`es (eating `Rabbit`s), and `Gnat`s (generally behaving just stupidly) provided in the world already. You may change these implementations to foster reuse, but the behavior of these existing items should not be changed. 
 
-## Implementation and Testing
+For rabbits and foxes you should provide corresponding AIs that survive the best in the arena by implementing the AI interfaces.
 
-- Follow the course style guide.
-- Write specifications for any new methods that you add. Improve specifications to the provided (skeleton) methods as appropriate.
-- Construct test cases that will help you test all aspects of your implementation. As you write tests, use IntelliJ's code coverage tool to evaluate the coverage of the tests. You should achieve 100% class coverage and at least 90% lines-of-code coverage as well as at least 90% branch coverage via your tests. Add your own test cases to a **different** Java file in the appropriate folder. (You do not need to test the code in the `ca.ubc.ece.cpen221.ip.core` package.) For obtaining test coverage information using IntelliJ IDEA, see [this documentation page](https://www.jetbrains.com/help/idea/running-test-with-coverage.html#read-coverage%20report), which also discusses how you can enable branch coverage.
-- You are expected to write helper methods (usually, though not always, `private` methods) to keep individual methods small.
+#### `Command`s and Behaviours
 
-## Directory Structure and Gradle
+All actors are periodically asked for their next action, which they provide by returning a `Command`. How often they are asked depends on their speed; `getCoolDownPeriod` returns the number of steps to be skipped before the next action. AIs of rabbits and foxes may only return instances of the predefined commands `BreedCommand`, `EatCommand`, `MoveCommand`, and `WaitCommand`. 
 
-We use `gradle` as a tool to compile your programs and run test cases. [Gradle is a build system](https://gradle.org/) that handles a variety of tasks that enable us to compile, test (and even deploy) our applications.
+The following are the predefined rules for breeding, eating, and moving that apply to rabbits and foxes:
 
-**You should preserve the directory structure for the codebase.** All of your implementation must be in the directory `src/main/java/ca/ubc/ece/cpen221/ip/mp`. If you introduce new classes then they should also be in the same directory and would need the statement `package ca.ubc.ece.cpen221.ip.mp;` at the top of the Java file. All your tests should be in the `src/test/java/ca/ubc/ece/cpen221/ip/mp` directory. Changing the directory structure will break the build process and your work will not receive any credit if your alter the directory structure.
++ `BreedCommand`: When an `ArenaAnimal` breeds, it makes a copy of itself on an adjacent tile (one of the 8 tiles around it). The `LivingItem` can only breed when it has enough energy (`getBreedLimit` returns the minimum required energy to breed) and has a valid empty adjacent location. Breeding occurs alone; there is no mating between rabbits or between foxes. When an `ArenaAnimal` breeds, its energy is reduced to 50 percent of its former energy (rounded down), and the newly-bred animal also starts at 50 percent of its parent's energy. Finally, a newly bred `ArenaAnimal` must be placed in an empty location that is adjacent to the parent.
++ `EatCommand`: An `ArenaAnimal` is only able to eat something that is adjacent to it. By eating a `Food`, the `ArenaAnimal` increases its energy by the food's calories (plant calories for rabbits and meat for foxes) up to its maximum energy level. The food (vegetable/non-vegetable) must be edible by the eater (herbivorous/carnivorous) and the eater must possess greater strength than the food, i.e., foxes should not attempt to eat grass or other foxes.
++ `MoveCommand`: An `ArenaAnimal` can only move once at a time, and moving distance is restricted by its moving range. Also, it must move only to valid, empty locations.
++ `WaitCommand`: Simply doing nothing is the  final option. Note that all living items lose energy each time `getNextAction` is called, even if they choose to do nothing, so they may eventually die of hunger.
 
-## Intermediate Milestone
+The above rules needed to be obeyed strictly by the AI for rabbits and foxes. Your own items may handle them more flexibly (e.g., they may jump around further on the world) and may add additional `Command`s.
 
-This is an opportunity to get some feedback from the TAs. We are not looking for perfect implementations at the intermediate milestone but *sufficient* progress (e.g., most of the requested methods work but have minor bugs; testing coverage is not at the desired level). *Insufficient progress* will result in a lowered grade.
+#### Implementing `Item`s With Reuse
 
-You should aim to complete -- at the least -- Tasks 1, 2 and 3.
+When implementing your own items you should maximize code reuse. You may modify the implementation (but not the behavior) of existing items to improve reuse. Your submission should not contain any duplicated code.
 
-You should push your work to the GitHub repository that you are using. Create a new branch called `milestone1` and push this branch to GitHub for the intermediate milestone. Read the module on git and branching (on Canvas). This [tutorial](https://www.atlassian.com/git/tutorials/using-branches) is an additional resource.
-## Teamwork
+#### Implementing the AI for the Arena
 
-* You will be working in teams of 3 for this MP. Read the note on **Teamwork** that has been included in the course syllabus.
-* Plan the division of work. 
-* Your final commit before the submission deadline **must** include files named `CONTRIB-ghusername.md` where `ghusername` should be replaced by the GitHub username of a team member, and these files should include a list of contributions made by that team member. (Your repository should, therefore, have three such files.) These files must be in the top-level directory of your repository, where this `README.md` file is. 
-* Academic integrity also involves claiming credit only for the work one did and not for the work of others. 
-* We expect contributions from each team member and will occasionally use the record of contributions to the GitHub repository as an indicator of participation level.
-* The staff reserve the right to adjust scores for the MP based on contribution levels. 
+> This is also where you can get creative. You only need to develop a process for deciding on the actions for the creatures in the virtual world. Don't get overwhelmed by the use of the term AI: you are simply developing some rules for decision making.
 
-## Submission
+You must implement the AI for rabbits and foxes by implementing the AI interface. For technical reasons, your AI classes must have a zero-argument constructor (you cannot participate in our virtual world tournament if your AIs require constructor arguments).
 
-You will submit your work via GitHub, by pushing your work to the repository that was created for your by GitHub Classroom.
+The AI for rabbits and foxes is restricted in flexibility compared what other actors can do. They can only see nearby parts of the world through the `ArenaWorld` interface and may only return the predefined commands obeying the rules above.
 
-## Hints
+Note that the AI should only rely on the interface contracts of arena animals, but not on specific implementations. For instance, we may chose to modify the size of the world, the energy limits, or the view ranges of animals. Returning invalid commands or attempting to cheat by casting the `ArenaWorld` to `World`, or casting other objects to specific implementations, will negate your submission for the the `Fox` and `Rabbit` AI implementations.
 
-* **Start early!**
-* **MPs involve a non-trivial amount of work.** 
-The MPs are structured to help you maximize your learning, and to expose you to new ideas. Don't be daunted by the scope of the MPs.
-* **Think before you start writing code.** 
-With some planning, you will not have to write a lot of code.
-* **Debug systematically.** 
-Learn to use the debugger. You will save time.
-* **Start writing test cases early.**
-Testing is important. Good test cases will speed up your implementation process and help you find bugs early.
-* **Use pre-designed datatypes.**
-Read about Java's `Set`s, `Map`s, and `List`s. Use them wisely. Don't reinvent the wheel.
-* **Complete a task fully and thoroughly** rather than having partial success with the tasks. Partial implementations of tasks do not get any credit.
-* To help you plan your work: each task in this MP will be worth 1 point. Functional correctness alone is not sufficient. If you do not test your code sufficiently, if you do not follow the style guide (minor deviations are okay) or if you do not write clear specifications, you will obtain a lower score even if your implementation passes all the tests we run. As an example, suppose you complete Tasks 1-4 (normally a score of 4) from a functional correctness perspective, but you have inadequate testing, or you have documented your code poorly (insufficient specifications, etc.), or you have excessive violations of the style guide, or your implementation does not use helper functions to manage useful and common operations then you may only score a 3. 
+#### The `World`
+
+The `World` class is the core engine of the game. It tracks all items (and removes dead ones) and actors. The world regularly gets the next action for each actor and performs the actions. The world organizes items in a 2-dimensional grid (`n x n`, for arbitrary ` n`) of `Item`s, with the top left corner being (0; 0). Locations are represented by the `Location` class, which contains several potentially useful methods. We also provide a utility class with potentially useful functionality.
+
+We provide a GUI to visualize the world with its items. The GUI has a simple interface containing two buttons: a <kbd>Step</kbd> to execute a single step; and a <kbd>Start/Stop</kbd> toggle button to run indefinitely until the toggle button is pressed again. For completing the machine problem, it is not necessary to understand the implementation of the GUI. To initialize the world with your items, modify the `Main` class. In the arena competition, we will initialize a large virtual world with grass and all competing rabbits and foxes.
+
+## Guidelines
+
++ State the representation invariant and the abstraction function for the two implementations of the Graph ADT as comments in the appropriate Java files. You should, of course, write RIs, AFs and specs wherever appropriate.
++ Properly encapsulate your implementation and avoid representation exposure.
++ Avoid using `instanceof` and downcasts. Avoid casting an interface to a specific implementation. 
++ Do not use the `java.lang.Class` class or the `java.lang.reflect` package. You do not need -- and should not use -- those techniques for this mini-project.
++ Do not edit any files in the `ca.ubc.ece.cpen221.graphs.core` package or any of the method declarations we’ve initially provided for you. You should also not edit any code in the package `ca.ubc.ece.cpen221.graphs.two.core`. In most situations, you should only be adding/changing code where indicated by `TODO` comments.
++ Make sure your code is readable and follow the style guide. Follow good code hygiene by adopting practices discussed in the course notes.
++ Write clear and concise specifications for the methods that you have been asked to implement (and other methods too).
++ Write tests that provide at least 95% lines of code coverage and branch coverage in the package `ca.ubc.ece.cpen221.graphs.one`.
++ For this mini-project, we understand that testing code in this virtual environment is very difficult, and we rather you devote your time to practice code reuse. You should try to run your implementations in the GUI and experiment with different behaviors You may write test code, but we do not have any testing-related requirements for that part of the mini-project.
++ Each task is worth 1 point. For Task 6, your evaluation will be based on how effective your submission is relative to other submissions.
+
+## Additional Hints
+
++ You may create helper classes and helper methods to help you with the assignment, as long as your code is compatible with the provided interfaces.
++ The tasks may be underspecified. Use your judgment. Write specifications. You can ask reasonable questions on Piazza.
++ The implementation of `Vertex`, and consequentially of `Graph`, involves the use of generics. You can read more about Java Generics starting with [Oracle Java Tutorial](https://docs.oracle.com/javase/tutorial/java/generics/index.html).
++ To understand how to handle command line arguments (as required by `TwitterAnalysis`), you can start with [this tutorial](https://www.baeldung.com/java-command-line-arguments).
++ Do not be intimidated by the length of this `README`. Some of the tasks are surprisingly straightforward. 
+## Previously Asked Questions
+
+1. Can an edge have the same vertex as the start and end point?
+	* Such edges are sometimes called self-loops. For the purpose of this assignment, we will disallow self-loops.
+2. What is the distance from a vertex to itself?
+	* The distance from a vertex to itself is 0. (We will use this as a definition for this assignment.)
+3. Who is an upstream neighbour?
+   * In a directed graph, if you have `a -> b`, or an edge from _a_ to _b_, then _a_ is an upstream neighbour of _b_, and equivalently _b_ is a downstream neighbour of _a_.
+4. In an undirected graph, an edge between _a_ and _b_ implies that we can go from _a_ to _b_ and then _b_ to _a_. Is this a loop?
+	* No; this is not considered a loop. A loop requires two or more edges except in the case of self-loops, which we are disallowing in any case. We will also not consider the situation when there are multiple edges between the same pair of vertices.

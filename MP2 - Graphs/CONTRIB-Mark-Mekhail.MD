@@ -1,59 +1,42 @@
-Contributions for MP1 
+Contributions for MP2 
 -
 Mark Mekhail 
 Github username: Mark-Mekhail
 
 Task Contributions:
--
+
 Task 1 Contributions:
-- negative method implementation
+- Worked on various methods and constructors for both adjacencyMatrixGraph and adjacencyListGraph.
 
 Task 2 Contributions:
-- blockpaint method implementation
-- setRegionColorsToAverage helper method implementation
-- setColorOfRegion helper method implementation
-- getAverage(ArrayList<Integer>) method implementation
+- Wrote the BFS method implementation
+- BFSFromNode, sortVertexList, and indexOfVertexWithLabel helper methods
 
 Task 3 Contributions:
-- cosine similarity method implementation
-- intensityVector helper method implementation
-- grayscale helper method implementation
-- dot product helper method implementation
+- Wrote the commonUpstreamVertices
+- commonDownstreamVertices
+- GraphDiameter method implementations, as well as the copyOfVertex helper method.
 
 Task 4 Contributions:
-- dft method implementation
-- fourierOfPixel method implementation
-- computeFourierComponents method implementation
+- numRetweets method implementation, as well as followerDistance helper method implementation
+- commonInfluencers method implementation
+- Worked on main method 
 
 Task 5 Contributions:
-- Assisted in finding a good algorithm for the task
+- Worked on Truck.java class implementation
+- Worked on ArenaVehicle.java interface
 
 Task 6 Contributions:
-- align text image implementation
-- align text image helper method implementations
-- modifyDFTAmplitudesForImage
-- maxInMatrix
-- getAngleOfRotation
-- slopeOfBestFitLineFromColumns, slopeOfBestFitLineFromRows
-- rowValues, columnValues
-- getAverage methods (for int[] and double[])
+- We haven't started
 
 
 Test Contributions:
-- 
-Task 4 Tests:
-- testDFT1()
-- testDFT2()
-- testDFT3()
-- testDFT4()
-- testDFT5()
+-
+Task 2 Tests:
+- All BFS tests
 
-Task 6 Tests:
-- testTextAlignImage1()
-- testTextAlignImage2()
-- testTextAlignImage3()
-- testTextAlignImage4()
-- testTextAlignImage5()
+Task 4 Tests:
+- All task 4 tests
 
 Tests Helper Methods:
 - toImage (DoubleMatrix class) method
@@ -62,7 +45,8 @@ Tests Helper Methods:
 
 Additional Comments:
 -
-- All team members were present during the team meetings/calls where we discussed ideas and ways to develop some of the algorithms.
-- All team members played a role in the development of this MP.
-- All team members made specifications for each of their methods.
-- Finally, each member, can vouch that our tasks for this MP were done in accordance with the Academic Integrity Policy for CPEN 221.
+- All team members were present during the team meetings/calls where we discussed ideas and ways to develop algorithms.
+- All team members played an integral role in the development of this MP.
+- On most occassions, teammates used the CodeWithMe (live editing) extension to write code together and then the host commited/pushed files.
+- All team members made specifications and wrote rep invariants / abstraction functions for equal number of methods.
+- Finally, each member can vouch that our tasks for this MP were done in accordance with the Academic Integrity Policies for CPEN 221.
